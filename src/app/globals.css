@@ -20,6 +20,28 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+#overall{
+  background-image: url('/asssets/bg.png');
+
+}
+
+.customOverlay {
+  z-index: 999; /* Higher than other elements */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+}
+.customAnimatedModal {
+  z-index: 1000; /* Even higher to appear above overlay */
+  position: relative;
+  max-width: 400px; /* Ensure it fits mobile */
+  margin: 0 auto;
+  padding: 20px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
