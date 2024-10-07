@@ -10,10 +10,13 @@ const MobileView = () => {
   const [transactionHash, setTransactionHash] = useState("");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
 
+
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState("");
+
+  
 
   // Fetch user data and wallet balance
   useEffect(() => {

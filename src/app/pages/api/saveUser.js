@@ -1,5 +1,5 @@
-import dbConnect from '../../utils/dbConnect'; // Utility to connect to MongoDB
-import User from '../../models/User'; // User model
+import dbConnect from '../../../utils/dbConnect'; // Utility to connect to MongoDB
+import User from '../../../models/User'; // User model
 
 export default async function handler(req, res) {
   await dbConnect();
