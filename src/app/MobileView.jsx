@@ -4,7 +4,6 @@ import { FaCopy } from "react-icons/fa";
 import CustomModal from "@/components/CustomModal"; // Import the custom modal component
 import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
-import Head from "next/head";
 
 const MobileView = () => {
   const [telegramUser, setTelegramUser] = useState({});
@@ -40,18 +39,34 @@ const MobileView = () => {
 
   // Fetch user data and wallet balance
   useEffect(() => {
-    if (typeof window !== "undefined" && window.Telegram?.WebApp) {
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
-      setTelegramUser(user);
+    const loadTelegramScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://telegram.org/js/telegram-web-app.js";
+      script.async = true; // Load the script asynchronously
+      script.onload = () => {
+        // Initialize Telegram Web App after script is loaded
+        if (window.Telegram?.WebApp) {
+          const user = window.Telegram.WebApp.initDataUnsafe?.user;
+          setTelegramUser(user);
 
-      if (user) {
-        checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
-      }
+          if (user) {
+            checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+          }
 
-      window.Telegram.WebApp.ready();
-    }
+          window.Telegram.WebApp.ready();
+        }
+      };
+      document.body.appendChild(script);
+    };
+
+    loadTelegramScript();
+
+    // Optional: Cleanup function to remove the script if the component unmounts
+    return () => {
+      const scripts = document.querySelectorAll('script[src="https://telegram.org/js/telegram-web-app.js"]');
+      scripts.forEach((script) => script.remove());
+    };
   }, []);
-
   // Check if user exists in the database
   const checkIfUserExists = async (user) => {
     try {
@@ -243,9 +258,7 @@ const MobileView = () => {
 
   return (
     <>
-     <Head>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-      </Head>
+    
      <div
       className="flex flex-col items-center bg-cover justify-between h-screen bg-blue-800 text-white"
       style={{
