@@ -188,7 +188,7 @@ const MobileView = () => {
         console.log("Wallet balance fetched successfully!");
         console.log("done setting user", data.user);
       } else {
-        toast.error("Error fetching wallet balance.");
+        toast.error("Error fetching wallet balance." + JSON.stringify(data));
         console.error("Error fetching wallet balance:", data);
       }
     } catch (error) {
