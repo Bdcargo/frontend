@@ -4,6 +4,7 @@ import { FaCopy } from "react-icons/fa";
 import CustomModal from "@/components/CustomModal"; // Import the custom modal component
 import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
+import Head from "next/head";
 
 const MobileView = () => {
   const [telegramUser, setTelegramUser] = useState({});
