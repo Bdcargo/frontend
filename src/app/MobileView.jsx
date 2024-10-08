@@ -2,21 +2,29 @@
 import React, { useState, useEffect } from "react";
 import { FaCopy } from "react-icons/fa";
 import CustomModal from "@/components/CustomModal"; // Import the custom modal component
+import { toast } from "react-toastify";
 
 const MobileView = () => {
-  const [telegramUser, setTelegramUser] = useState(null);
+  const [telegramUser, setTelegramUser] = useState({});
+  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState({
+  //   id: 123456789,
+  //   first_name: "John",
+  //   last_name: "Doe",
+  //   username: "xtreme",
+  //   language_code: "en",
+  //   photo_url: "https://t.me/i/userpic/320/johndoe.jpg",
+  // });
   const [walletBalance, setWalletBalance] = useState(0); // State for wallet balance
   const [amount, setAmount] = useState(0); // State for the amount to send
   const [transactionHash, setTransactionHash] = useState("");
+  const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
-
 
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState("");
-
-  
 
   // Fetch user data and wallet balance
   useEffect(() => {
@@ -25,24 +33,91 @@ const MobileView = () => {
       setTelegramUser(user);
 
       if (user) {
-        fetchWalletBalance(user.id); // Fetch wallet balance using user's ID
+        checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+      }
+
+      if (user) {
+        checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
       }
 
       window.Telegram.WebApp.ready();
     }
   }, []);
 
-  // Fetch wallet balance function
-  const fetchWalletBalance = async (userId) => {
+  // Check if user exists in the database
+  const checkIfUserExists = async (user) => {
     try {
-      const response = await fetch(`/api/wallet/${userId}`); // Example API to get wallet balance
-      const data = await response.json();
-      if (response.ok) {
-        setWalletBalance(data.balance); // Set the fetched balance
+      const getUserResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user.username}`
+      ); // Adjust the API endpoint as per your backend
+      const data = await getUserResponse.json();
+      console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
+
+      if (getUserResponse.ok) {
+        // User exists, proceed with fetching wallet balance
+        fetchWalletBalance();
       } else {
-        console.error("Error fetching wallet balance:", data.message);
+        // User does not exist, register the user
+        registerUser(user);
       }
     } catch (error) {
+      toast.error("Error checking user existence.");
+      console.error("Error checking user existence:", error);
+    }
+  };
+
+  // Register the user if they don't exist
+  const registerUser = async (user) => {
+    try {
+      const registerResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user.username,
+            userId: user.id, // Pass any other required data from the Telegram user
+          }),
+        }
+      );
+
+      const data = await registerResponse.json();
+      console.log("reg data", data);
+      if (registerResponse.ok) {
+        // After successful registration, fetch wallet balance
+        toast.success("User registered successfully!");
+        fetchWalletBalance();
+      } else {
+        toast.error(`Error registering user: ${data.message}`);
+        console.error("Error registering user:", data.message);
+      }
+    } catch (error) {
+      toast.error("Error during user registration.");
+      console.error("Error during user registration:", error);
+    }
+  };
+
+  // Fetch wallet balance function
+  const fetchWalletBalance = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
+      ); // Example API to get wallet balance
+      const data = await response.json();
+      if (response.ok) {
+        setWalletBalance(data?.user?.wallet?.balance); // Set the fetched balance
+        setUser(data?.user);
+        setTransactionStatus(data?.user?.wallet?.transaction_status);
+        console.log("Wallet balance fetched successfully!");
+        console.log("done setting user", data.user);
+      } else {
+        toast.error("Error fetching wallet balance.");
+        console.error("Error fetching wallet balance:", data);
+      }
+    } catch (error) {
+      toast.error("Error fetching wallet balance.");
       console.error("Error:", error);
     }
   };
@@ -56,44 +131,53 @@ const MobileView = () => {
 
   const handlePaymentOptionClick = (wallet) => {
     setSelectedWallet(wallet);
+    if (wallet === "USDT") {
+      setWalletAddress("0x1234567890abcdef");
+    } else {
+      setWalletAddress("0x1234567890abcefg");
+    }
     setOpenAmountModal(false);
     setOpenWalletModal(true);
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
-    alert("Copied to clipboard");
+    toast.info("Wallet address copied to clipboard!");
   };
 
   // Handle transaction confirmation
   const handleTransactionConfirm = async () => {
     if (!transactionHash || amount <= 0) {
-      alert("Please enter a valid amount and transaction hash");
+      toast.warning("Please enter a valid amount and transaction hash.");
       return;
     }
 
     try {
-      const response = await fetch("/api/wallet/transaction", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: telegramUser.id,
-          amount,
-          transactionHash,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user._id,
+            amount,
+            transactionHash,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
-        alert("Transaction successful!");
+        toast.success("Transaction successful!");
         setWalletBalance((prevBalance) => prevBalance - amount); // Update wallet balance after successful transaction
         closeWalletSheet(); // Close the modal after success
       } else {
-        alert(`Transaction failed: ${data.message}`);
+        toast.error(`Transaction failed: ${data.message}`);
       }
     } catch (error) {
+      toast.error("Transaction error.");
       console.error("Transaction error:", error);
     }
   };
@@ -102,7 +186,7 @@ const MobileView = () => {
     <div
       className="flex flex-col items-center bg-cover justify-between h-screen bg-blue-800 text-white"
       style={{
-        backgroundImage: "url(" + "/assets/bg.png" + ")",
+        backgroundImage: "url(/assets/bg.png)",
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
@@ -117,21 +201,20 @@ const MobileView = () => {
         {/* Wallet Balance */}
         <div className="text-center flex flex-col items-start mt-8">
           <p className="text-sm font-medium">Wallet Balance</p>
-          <h2 className="text-6xl font-bold my-2">{walletBalance}</h2> {/* Display dynamic wallet balance */}
+          <h2 className="text-6xl font-bold my-2">{walletBalance}</h2>{" "}
+          {/* Display dynamic wallet balance */}
           <button className="px-4 bg-[#2583ff80] py-1 rounded-full text-sm font-light">
-            Stats
+            {transactionStatus}
           </button>
         </div>
       </div>
 
-    
-    
       {/* Cardano Coin Image */}
       <div className="mt-4">
         <img
           src="/assets/cointeko.jpg"
           alt="Cardano Coin"
-          className="w-64 h-64 mix-blend-lighten	"
+          className="w-64 h-64 mix-blend-lighten"
         />
       </div>
 
@@ -139,7 +222,7 @@ const MobileView = () => {
       <div
         className="flex justify-center gap-2 mx-8 mb-8 w-fit px-6 bg-contain py-8 rounded-t-3xl"
         style={{
-          backgroundImage: "url(" + "/assets/bgd.png" + ")",
+          backgroundImage: "url(/assets/bgd.png)",
           backgroundPosition: "center",
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
@@ -151,7 +234,9 @@ const MobileView = () => {
             alt="Mates"
             className="w-6 h-6 object-contain"
           />
-          <p className="text-sm font-light mt-1">Mates</p>
+          <a href={`/mates/?userId=${user?._id}`}>
+            <p className="text-sm font-light mt-1">Mates</p>
+          </a>
         </div>
         <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
           <img
@@ -159,7 +244,7 @@ const MobileView = () => {
             alt="Task"
             className="w-6 h-6 object-contain"
           />
-          <a href="/task">
+          <a href={`/task/?username=${user.username}`}>
             <p className="text-sm font-light mt-1">Task</p>
           </a>
         </div>
@@ -184,9 +269,12 @@ const MobileView = () => {
         </div>
       </div>
 
-
       {/* Amount Modal */}
-      <CustomModal isOpen={openAmountModal} onClose={closeAmountSheet} title="Enter Amount">
+      <CustomModal
+        isOpen={openAmountModal}
+        onClose={closeAmountSheet}
+        title="Enter Amount"
+      >
         <input
           type="number"
           placeholder="Enter amount"
@@ -195,7 +283,9 @@ const MobileView = () => {
           onChange={(e) => setAmount(e.target.value)} // Set the entered amount
         />
         <div className="mt-6">
-          <h3 className="text-xl font-semibold text-black">Select Payment Option:</h3>
+          <h3 className="text-xl font-semibold text-black">
+            Select Payment Option:
+          </h3>
           <div className="flex justify-around mt-4">
             <button
               onClick={() => handlePaymentOptionClick("USDT")}
@@ -204,40 +294,40 @@ const MobileView = () => {
               USDT Wallet
             </button>
             <button
-              onClick={() => handlePaymentOptionClick("BNB")}
+              onClick={() => handlePaymentOptionClick("Crypto")}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              BNB Wallet
+              Crypto Wallet
             </button>
           </div>
         </div>
       </CustomModal>
 
       {/* Wallet Modal */}
-      <CustomModal isOpen={openWalletModal} onClose={closeWalletSheet} title={`${selectedWallet} Wallet Information`}>
-        <div className="flex items-center justify-between mt-6 p-4 border border-white rounded-xl bg-gray-50">
-          <p className="text-lg text-black">{walletAddress}</p>
-          <button onClick={handleCopy}>
-            <FaCopy className="text-gray-500" />
-          </button>
-        </div>
-
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold text-black">Enter Transaction Hash:</h3>
-          <input
-            type="text"
-            placeholder="Transaction Hash"
-            className="w-full mt-2 p-3 bg-gray-100 rounded-lg shadow-md text-black"
-            value={transactionHash}
-            onChange={(e) => setTransactionHash(e.target.value)} // Set the entered transaction hash
-          />
-        </div>
-
+      <CustomModal
+        isOpen={openWalletModal}
+        onClose={closeWalletSheet}
+        title="Confirm Payment"
+      >
+        <p>Wallet Address: {walletAddress}</p>
         <button
-          onClick={handleTransactionConfirm} // Confirm transaction on click
-          className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          onClick={handleCopy}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
         >
-          Confirm Payment
+          Copy Address
+        </button>
+        <input
+          type="text"
+          placeholder="Transaction Hash"
+          className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
+          value={transactionHash}
+          onChange={(e) => setTransactionHash(e.target.value)} // Set transaction hash
+        />
+        <button
+          onClick={handleTransactionConfirm}
+          className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Confirm Transaction
         </button>
       </CustomModal>
     </div>

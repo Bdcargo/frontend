@@ -1,8 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaArrowLeft, FaShareAlt, FaCoins, FaUserFriends } from "react-icons/fa";
 
+
+const TasksPage = () => {
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [referredPeopleCount, setReferredPeopleCount] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const router = useRouter();
+  const search = useSearchParams();
+  const username = search.get("username");
+
+  const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${username}`; // Define your API URL
+
+  
 // Share link using phone's default sharing options
 const shareReferralLink = async (username) => {
   const referralLink = `${window.location.origin}?ref=${username}`;
@@ -24,63 +37,56 @@ const shareReferralLink = async (username) => {
   }
 };
 
-const TasksPage = () => {
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [referredPeopleCount, setReferredPeopleCount] = useState(0);
-  const [username, setUsername] = useState("user123"); // Fetch the current username from auth context or API
 
-  const router = useRouter();
-
-  // Fetch user data such as wallet balance and referred people count
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true);
       try {
-        // Simulate fetching wallet balance and referral count
-        const userData = await fetch("/api/user-data"); // Replace with your actual API
-        const data = await userData.json();
-
-        setWalletBalance(data.walletBalance); // Example: fetched wallet balance
-        setReferredPeopleCount(data.referredPeopleCount); // Example: number of referred people
-        setUsername(data.username); // Set the username from fetched data
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setWalletBalance(data?.user?.wallet.balance);
+        setReferredPeopleCount(data?.user?.referrals);
+        console.log("ref count", data?.user?.referrals);
       } catch (error) {
+        setError("Failed to load user data");
         console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
   }, []);
 
-  // Task definitions with dynamic values based on state
   const tasks = [
     {
       title: "Share link",
       status: "",
       icon: <FaShareAlt />,
-      action: () => shareReferralLink(username), // Action for sharing
+      action: () => shareReferralLink(username),
     },
     {
       title: "Commit a stake",
       status: walletBalance === 0 ? "Uncompleted" : "Completed",
       icon: <FaCoins />,
+      action: () => {
+        if (walletBalance === 0) {
+          // Navigate to stake page or show a message
+        }
+      },
     },
     {
-      title: "Refer people (min 6)",
-      status: `${referredPeopleCount}`, // Number of referred people
+      title: "Refer people (min 10)",
+      status: `${referredPeopleCount.length}`,
       icon: <FaUserFriends />,
     },
   ];
 
   return (
-    <div
-      className="flex flex-col items-center justify-start h-screen bg-cover pt-12"
-      style={{
-        backgroundImage: "url('/assets/bg.png')", // Replace with your correct asset path
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* Back Button */}
+    <div className="flex flex-col items-center justify-start h-screen bg-cover pt-12" style={{ backgroundImage: "url('/assets/bg.png')" }}>
       <div onClick={() => router.back()} className="absolute top-8 left-4">
         <button className="flex items-center p-2 pl-4 pr-6 rounded-full bg-[#ffffff20] backdrop-blur-lg shadow-lg text-white">
           <FaArrowLeft className="w-4 h-4 mr-2" />
@@ -88,23 +94,27 @@ const TasksPage = () => {
         </button>
       </div>
 
-      {/* Tasks */}
-      <div className="my-auto w-full flex flex-col items-center">
-        {tasks.map((task, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center w-4/5 max-w-md p-4 mb-4 rounded-full bg-[#ffffff20] backdrop-blur-lg shadow-lg text-white mt-4 cursor-pointer"
-            onClick={task.action} // Handle action if present
-          >
-            {/* Task Icon */}
-            <div className="flex items-center">
-              <span className="mr-3">{task.icon}</span>
-              <p className="font-medium text-lg">{task.title}</p>
+      {loading ? (
+        <p className="text-white">Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div className="my-auto w-full flex flex-col items-center">
+          {tasks.map((task, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center w-4/5 max-w-md p-4 mb-4 rounded-full bg-[#ffffff20] backdrop-blur-lg shadow-lg text-white mt-4 cursor-pointer"
+              onClick={task.action}
+            >
+              <div className="flex items-center">
+                <span className="mr-3">{task.icon}</span>
+                <p className="font-medium text-lg">{task.title}</p>
+              </div>
+              <p className="text-sm">{task.status}</p>
             </div>
-            <p className="text-sm">{task.status}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
