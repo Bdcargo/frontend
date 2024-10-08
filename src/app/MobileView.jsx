@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { FaCopy } from "react-icons/fa";
 import CustomModal from "@/components/CustomModal"; // Import the custom modal component
 import { toast } from "react-toastify";
+import { useSearchParams } from "next/navigation";
 
 const MobileView = () => {
   const [telegramUser, setTelegramUser] = useState({});
@@ -21,6 +22,23 @@ const MobileView = () => {
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
 
+  const search = useSearchParams();
+
+  const ref= search.get("ref");
+
+  useEffect(() => {
+    
+  if(ref){
+
+    checkIfRefUserExists(user.username, ref)
+  }
+    
+  }, [ref])
+  
+
+
+
+
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
@@ -32,10 +50,7 @@ const MobileView = () => {
       const user = window.Telegram.WebApp.initDataUnsafe?.user;
       setTelegramUser(user);
 
-      if (user) {
-        checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
-      }
-
+   
       if (user) {
         checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
       }
@@ -66,6 +81,28 @@ const MobileView = () => {
     }
   };
 
+
+
+  const checkIfRefUserExists = async (user, ref) => {
+    try {
+      const getUserResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user.username}`
+      ); // Adjust the API endpoint as per your backend
+      const data = await getUserResponse.json();
+      console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
+
+      if (getUserResponse.ok) {
+        // User exists, proceed with fetching wallet balance
+      } else {
+        // User does not exist, register the user
+        registerRefUser(user, ref);
+      }
+    } catch (error) {
+      toast.error("Error checking user existence.");
+      console.error("Error checking user existence:", error);
+    }
+  };
+
   // Register the user if they don't exist
   const registerUser = async (user) => {
     try {
@@ -78,7 +115,39 @@ const MobileView = () => {
           },
           body: JSON.stringify({
             username: user.username,
-            userId: user.id, // Pass any other required data from the Telegram user
+          }),
+        }
+      );
+
+      const data = await registerResponse.json();
+      console.log("reg data", data);
+      if (registerResponse.ok) {
+        // After successful registration, fetch wallet balance
+        toast.success("User registered successfully!");
+        fetchWalletBalance();
+      } else {
+        toast.error(`Error registering user: ${data.message}`);
+        console.error("Error registering user:", data.message);
+      }
+    } catch (error) {
+      toast.error("Error during user registration.");
+      console.error("Error during user registration:", error);
+    }
+  };
+ 
+ 
+  const registerRefUser = async (user, ref) => {
+    try {
+      const registerResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user.username,
+            referredBy: ref, // Pass any other required data from the Telegram user
           }),
         }
       );
