@@ -48,10 +48,9 @@ const MobileView = () => {
         if (window.Telegram?.WebApp) {
           const user = window.Telegram.WebApp.initDataUnsafe?.user;
           setTelegramUser(user);
-          setUser(user)
 
           if (user) {
-            checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+            checkIfUserExists(telegramUser); // Check if the user exists before fetching the wallet balance
           }
 
           window.Telegram.WebApp.ready();
@@ -75,6 +74,7 @@ const MobileView = () => {
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
       ); // Adjust the API endpoint as per your backend
       const data = await getUserResponse.json();
+      setUser(data?.user)
       console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
 
       if (getUserResponse.ok) {
