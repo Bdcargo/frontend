@@ -403,4 +403,10 @@ const MobileView = () => {
   );
 };
 
-export default MobileView;
+const MobileWithSuspense = () => (
+  <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+    <MobileView />
+  </React.Suspense>
+);
+
+export default MobileWithSuspense;
