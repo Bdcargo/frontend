@@ -86,4 +86,11 @@ const MatesPage = () => {
   );
 };
 
-export default MatesPage;
+// Wrapping the MatesPage component in a Suspense boundary
+const MatesPageWithSuspense = () => (
+    <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+      <MatesPage />
+    </React.Suspense>
+  );
+  
+  export default MatesPageWithSuspense;

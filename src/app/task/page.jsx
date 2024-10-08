@@ -119,4 +119,11 @@ const shareReferralLink = async (username) => {
   );
 };
 
-export default TasksPage;
+// Wrapping the MatesPage component in a Suspense boundary
+const TaskPageWithSuspense = () => (
+  <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+    <TasksPage />
+  </React.Suspense>
+);
+
+export default TaskPageWithSuspense;
