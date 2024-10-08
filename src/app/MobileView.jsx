@@ -241,7 +241,11 @@ const MobileView = () => {
   };
 
   return (
-    <div
+    <>
+     <Head>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+      </Head>
+     <div
       className="flex flex-col items-center bg-cover justify-between h-screen bg-blue-800 text-white"
       style={{
         backgroundImage: "url(/assets/bg.png)",
@@ -393,6 +397,8 @@ const MobileView = () => {
         </button>
       </CustomModal>
     </div>
+    </>
+   
   );
 };
 
