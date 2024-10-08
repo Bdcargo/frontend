@@ -47,6 +47,7 @@ const MobileView = () => {
         // Initialize Telegram Web App after script is loaded
         if (window.Telegram?.WebApp) {
           const user = window.Telegram.WebApp.initDataUnsafe?.user;
+          alert("telegram " + JSON.stringify(user))
           setTelegramUser(user);
 
           if (user) {
