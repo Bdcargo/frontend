@@ -50,7 +50,7 @@ const MobileView = () => {
           setTelegramUser(user);
 
           if (user) {
-            checkIfUserExists(telegramUser); // Check if the user exists before fetching the wallet balance
+            checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
           }
 
           window.Telegram.WebApp.ready();
