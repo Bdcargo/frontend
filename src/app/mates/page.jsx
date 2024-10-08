@@ -14,8 +14,8 @@ const MatesPage = () => {
 
   useEffect(() => {
     const fetchReferrals = async () => {
-        setLoading(true)
       if (!userId) return; // Check if userId is available
+      setLoading(true)
 
       try {
         const response = await fetch(
