@@ -79,7 +79,7 @@ const MobileView = () => {
 
       if (getUserResponse.ok) {
         // User exists, proceed with fetching wallet balance
-        fetchWalletBalance();
+        fetchWalletBalance(user);
       } else {
         // User does not exist, register the user
         registerUser(user);
@@ -131,7 +131,7 @@ const MobileView = () => {
       if (registerResponse.ok) {
         // After successful registration, fetch wallet balance
         toast.success("User registered successfully!");
-        fetchWalletBalance();
+        fetchWalletBalance(user);
       } else {
         toast.error(`Error registering user: ${data.message}`);
         console.error("Error registering user:", data.message);
@@ -163,7 +163,7 @@ const MobileView = () => {
       if (registerResponse.ok) {
         // After successful registration, fetch wallet balance
         toast.success("User registered successfully!");
-        fetchWalletBalance();
+        fetchWalletBalance(user);
       } else {
         toast.error(`Error registering user: ${data.message}`);
         console.error("Error registering user:", data.message);
@@ -175,10 +175,10 @@ const MobileView = () => {
   };
 
   // Fetch wallet balance function
-  const fetchWalletBalance = async () => {
+  const fetchWalletBalance = async (user) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${telegramUser?.username}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
       ); // Example API to get wallet balance
       const data = await response.json();
       if (response.ok) {
