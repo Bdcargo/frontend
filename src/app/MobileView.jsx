@@ -178,7 +178,7 @@ const MobileView = () => {
   const fetchWalletBalance = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${telegramUser?.username}`
       ); // Example API to get wallet balance
       const data = await response.json();
       if (response.ok) {
