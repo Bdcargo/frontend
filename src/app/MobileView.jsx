@@ -24,20 +24,13 @@ const MobileView = () => {
 
   const search = useSearchParams();
 
-  const ref= search.get("ref");
+  const ref = search.get("ref");
 
   useEffect(() => {
-    
-  if(ref){
-
-    checkIfRefUserExists(user.username, ref)
-  }
-    
-  }, [ref])
-  
-
-
-
+    if (ref && user.username) {
+      checkIfRefUserExists(user.username, ref);
+    }
+  }, [ref, user]);
 
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
@@ -50,7 +43,6 @@ const MobileView = () => {
       const user = window.Telegram.WebApp.initDataUnsafe?.user;
       setTelegramUser(user);
 
-   
       if (user) {
         checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
       }
@@ -63,7 +55,7 @@ const MobileView = () => {
   const checkIfUserExists = async (user) => {
     try {
       const getUserResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user.username}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
       ); // Adjust the API endpoint as per your backend
       const data = await getUserResponse.json();
       console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
@@ -81,12 +73,10 @@ const MobileView = () => {
     }
   };
 
-
-
   const checkIfRefUserExists = async (user, ref) => {
     try {
       const getUserResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user.username}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
       ); // Adjust the API endpoint as per your backend
       const data = await getUserResponse.json();
       console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
@@ -114,7 +104,7 @@ const MobileView = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: user.username,
+            username: user?.username,
           }),
         }
       );
@@ -134,8 +124,7 @@ const MobileView = () => {
       console.error("Error during user registration:", error);
     }
   };
- 
- 
+
   const registerRefUser = async (user, ref) => {
     try {
       const registerResponse = await fetch(
@@ -146,7 +135,7 @@ const MobileView = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: user.username,
+            username: user?.username,
             referredBy: ref, // Pass any other required data from the Telegram user
           }),
         }
@@ -230,7 +219,7 @@ const MobileView = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: user._id,
+            userId: user?._id,
             amount,
             transactionHash,
           }),
@@ -297,26 +286,30 @@ const MobileView = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
-          <img
-            src="/assets/share.png"
-            alt="Mates"
-            className="w-6 h-6 object-contain"
-          />
-          <a href={`/mates/?userId=${user?._id}`}>
+        <a href={`/mates/?userId=${user?._id}`}>
+          <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+            <img
+              src="/assets/share.png"
+              alt="Mates"
+              className="w-6 h-6 object-contain"
+            />
             <p className="text-sm font-light mt-1">Mates</p>
-          </a>
-        </div>
+          </div>
+        </a>
+
+
+        
+        <a href={`/task/?username=${user?.username}`}>
         <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
           <img
             src="/assets/task.png"
             alt="Task"
             className="w-6 h-6 object-contain"
           />
-          <a href={`/task/?username=${user.username}`}>
             <p className="text-sm font-light mt-1">Task</p>
-          </a>
         </div>
+        </a>
+
         <div
           onClick={openAmountSheet}
           className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"

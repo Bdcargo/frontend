@@ -71,9 +71,9 @@ const MatesPage = () => {
                 >
                  
                   <h2 className="text-xl font-semibold mb-1">
-                    {referral.user.username}
+                    {referral?.user?.username}
                   </h2>
-                  <p className={`w-full flex items-end justify-end text-md ${referral.status === "inactive" ? "text-red-300 " : "text-white"}`}>{referral.status}</p>                 
+                  <p className={`w-full flex items-end justify-end text-md ${referral?.status === "inactive" ? "text-red-300 " : "text-white"}`}>{referral?.status}</p>                 
                 </div>
               ))
             ) : (
