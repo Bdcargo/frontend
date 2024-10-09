@@ -28,7 +28,7 @@ const MobileView = () => {
 
   useEffect(() => {
     if (referralCode && user.username) {
-      checkIfRefUserExists(user, referralCode);
+      // checkIfRefUserExists(user, referralCode);
     }
   }, [referralCode, user]);
 
@@ -56,7 +56,7 @@ const MobileView = () => {
           if (user) {
 
             if(startParam){
-              checkIfRefUserExists(user, startParam
+              // checkIfRefUserExists(user, startParam
 
               )
             }else{
