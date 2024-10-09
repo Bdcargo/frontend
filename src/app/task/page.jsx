@@ -18,7 +18,7 @@ const TasksPage = () => {
   
 // Share link using phone's default sharing options
 const shareReferralLink = async (username) => {
-  const referralLink = `${window.location.origin}?ref=${username}`;
+  const referralLink = `https://t.me/BabyZuma_Bot/BZUMA/?startapp=${username}`;
   
   try {
     if (navigator.share) {
