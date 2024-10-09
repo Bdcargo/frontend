@@ -48,20 +48,28 @@ const MobileView = () => {
         if (window.Telegram?.WebApp) {
           const user = window.Telegram.WebApp.initDataUnsafe?.user;
           setTelegramUser(user);
-
-          if (user) {
-            checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
-          }
-
-          window.Telegram.WebApp.ready();
-
-
           const params = new URLSearchParams(window.location.search);
           const startParam = params.get("start");
           if (startParam) {
             setReferralCode(startParam); // Set the referral code
             console.log("Referral Code:", startParam);
           }
+          if (user) {
+
+            if(startParam){
+              checkIfRefUserExists(user, startParam
+                
+              )
+            }else{
+              checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+
+            }
+          }
+
+          window.Telegram.WebApp.ready();
+
+
+         
         }
       };
       document.body.appendChild(script);
