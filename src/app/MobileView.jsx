@@ -25,7 +25,6 @@ const MobileView = () => {
 
   const search = useSearchParams();
 
-  const ref = search.get("ref");
 
   useEffect(() => {
     if (referralCode && user.username) {
@@ -62,6 +61,7 @@ const MobileView = () => {
           if (startParam) {
             setReferralCode(startParam); // Set the referral code
             console.log("Referral Code:", startParam);
+          }
         }
       };
       document.body.appendChild(script);
