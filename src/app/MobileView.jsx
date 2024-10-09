@@ -21,6 +21,8 @@ const MobileView = () => {
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
+  const [withdrawalAddress, setWithdrawalAddress] =
+    useState("");
   const [referralCode, setReferralCode] = useState(null);
 
   const search = useSearchParams();
@@ -34,6 +36,8 @@ const MobileView = () => {
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
   const [openWalletModal, setOpenWalletModal] = useState(false);
+  const [openWithdrawModal, setOpenWthdrawModal] = useState(false);
+  const [isHaveWallet, setIsHaveWallet] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState("");
 
   // Fetch user data and wallet balance
@@ -197,6 +201,8 @@ const MobileView = () => {
         setWalletBalance(data?.user?.wallet?.balance); // Set the fetched balance
         setUser(data?.user);
         setTransactionStatus(data?.user?.wallet?.transaction_status);
+        setIsHaveWallet(data?.user?.wallet?.walletName ? true : false)
+        setWithdrawalAddress(data?.user?.wallet?.walletName)
         console.log("Wallet balance fetched successfully!");
         console.log("done setting user", data.user);
       } else {
@@ -215,6 +221,9 @@ const MobileView = () => {
 
   const openWalletSheet = () => setOpenWalletModal(true);
   const closeWalletSheet = () => setOpenWalletModal(false);
+
+  const openWithdrawSheet = () => setOpenWthdrawModal(true);
+  const closeWithdrawSheet = () => setOpenWthdrawModal(false);
 
   const handlePaymentOptionClick = (wallet) => {
     setSelectedWallet(wallet);
@@ -266,6 +275,41 @@ const MobileView = () => {
     } catch (error) {
       toast.error("Transaction error.");
       console.error("Transaction error:", error);
+    }
+  };
+  const handleSetWallet = async () => {
+    if (!withdrawalAddress || withdrawalAddress.length <= 8) {
+      toast.warning("Please enter a valid address");
+      return;
+    }
+
+    try {
+      console.log("req wal", user?._id,
+        withdrawalAddress,)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/setWalletName`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user?._id,
+            walletName: withdrawalAddress,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Wallet add successful!");
+        closeWithdrawSheet(); // Close the modal after success
+      } else {
+        toast.error(`Wallet add failed: ${data.error || data.message}`);
+      }
+    } catch (error) {
+      toast.error("Wallet error.");
+      console.error("wallet error:", error);
     }
   };
 
@@ -351,7 +395,8 @@ const MobileView = () => {
           </div>
           {user?.referrals && user?.referralCode.legth > 10 ? (
             <>
-              <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+              <div             onClick={openWithdrawSheet}
+ className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
                 <img
                   src="/assets/boost.png"
                   alt="Boost"
@@ -362,7 +407,8 @@ const MobileView = () => {
             </>
           ) : (
             <>
-              <div className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+              <div            onClick={openWithdrawSheet}
+ className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
                 <img
                   src="/assets/boost.png"
                   alt="Boost"
@@ -434,6 +480,41 @@ const MobileView = () => {
           >
             Confirm Transaction
           </button>
+        </CustomModal>
+
+        {/* Withdraw modal */}
+        <CustomModal
+          isOpen={openWithdrawModal}
+          onClose={closeWithdrawSheet}
+          title="Confirm Payment"
+        >
+          {isHaveWallet ? (
+            <>
+              <p>we have your USDT Wallet Address:</p>
+              <p className="px-4 py-2 bg-blue-100 rounded-xl border-slate-200 border">
+                {" "}
+                {withdrawalAddress}
+              </p>
+            </>
+          ) : (
+            <>
+              <p>Enter your USDT Wallet Address:</p>
+
+              <input
+                type="text"
+                placeholder="Wallet address"
+                className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
+                value={withdrawalAddress}
+                onChange={(e) => setWithdrawalAddress(e.target.value)} // Set transaction hash
+              />
+              <button
+                onClick={handleSetWallet}
+                className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </>
+          )}
         </CustomModal>
       </div>
     </>
