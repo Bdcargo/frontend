@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FaCopy } from "react-icons/fa";
 import CustomModal from "@/components/CustomModal"; // Import the custom modal component
 import { toast } from "react-toastify";
@@ -21,6 +22,10 @@ const MobileView = () => {
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
+
+  const router = useRouter();
+
+
   const [withdrawalAddress, setWithdrawalAddress] =
     useState("");
   const [referralCode, setReferralCode] = useState(null);
@@ -267,8 +272,9 @@ const MobileView = () => {
       const data = await response.json();
       if (response.ok) {
         toast.success("Transaction successful!");
-        setWalletBalance((prevBalance) => prevBalance - amount); // Update wallet balance after successful transaction
+
         closeWalletSheet(); // Close the modal after success
+        router.refresh()
       } else {
         toast.error(`Transaction failed: ${data.message}`);
       }
