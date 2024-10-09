@@ -105,7 +105,6 @@ const MobileView = () => {
 
   const checkIfRefUserExists = async (user, ref) => {
     try {
-      alert("you are referred")
       console.log("mine", user)
 
       const getUserResponse = await fetch(
