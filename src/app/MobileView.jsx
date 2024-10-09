@@ -105,28 +105,28 @@ const MobileView = () => {
     }
   };
 
-  const checkIfRefUserExists = async (user, ref) => {
-    try {
-      alert("you are referred")
-      console.log("mine", user)
+  // const checkIfRefUserExists = async (user, ref) => {
+  //   try {
+  //     alert("you are referred")
+  //     console.log("mine", user)
 
-      const getUserResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
-      ); // Adjust the API endpoint as per your backend
-      const data = await getUserResponse.json();
-      console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
+  //     const getUserResponse = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
+  //     ); // Adjust the API endpoint as per your backend
+  //     const data = await getUserResponse.json();
+  //     console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
 
-      if (getUserResponse.ok) {
-        // User exists, proceed with fetching wallet balance
-      } else {
-        // User does not exist, register the user
-      //  registerRefUser(user, ref);
-      }
-    } catch (error) {
-      toast.error("Error checking user existence.");
-      console.error("Error checking user existence:", error);
-    }
-  };
+  //     if (getUserResponse.ok) {
+  //       // User exists, proceed with fetching wallet balance
+  //     } else {
+  //       // User does not exist, register the user
+  //       registerRefUser(user, ref);
+  //     }
+  //   } catch (error) {
+  //     toast.error("Error checking user existence.");
+  //     console.error("Error checking user existence:", error);
+  //   }
+  // };
 
   // Register the user if they don't exist
   const registerUser = async (user) => {
@@ -160,42 +160,39 @@ const MobileView = () => {
     }
   };
 
-  // const registerRefUser = async (user, ref) => {
-  //   try {
-  //     const registerResponse = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           username: user?.username,
-  //           referredBy: ref, // Pass any other required data from the Telegram user
-  //         }),
-  //       }
-  //     );
+  const registerRefUser = async (user, ref) => {
+    try {
+      const registerResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            referredBy: ref, // Pass any other required data from the Telegram user
+          }),
+        }
+      );
 
-  //     const data = await registerResponse.json();
-  //     console.log("reg data", data);
-  //     if (registerResponse.ok) {
-  //       // After successful registration, fetch wallet balance
-  //       toast.success("User registered successfully!");
-  //       fetchWalletBalance(user);
-  //     } else {
-  //       toast.error(`Error registering user: ${data.message}`);
-  //       console.error("Error registering user:", data.message);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error during user registration.");
-  //     console.error("Error during user registration:", error);
-  //   }
-  // };
+      const data = await registerResponse.json();
+      console.log("reg data", data);
+      if (registerResponse.ok) {
+        // After successful registration, fetch wallet balance
+        toast.success("User registered successfully!");
+        fetchWalletBalance(user);
+      } else {
+        toast.error(`Error registering user: ${data.message}`);
+        console.error("Error registering user:", data.message);
+      }
+    } catch (error) {
+      toast.error("Error during user registration.");
+      console.error("Error during user registration:", error);
+    }
+  };
 
   // Fetch wallet balance function
-  
-  
-  
   const fetchWalletBalance = async (user) => {
     try {
       const response = await fetch(
