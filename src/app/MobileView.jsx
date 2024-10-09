@@ -92,6 +92,8 @@ const MobileView = () => {
 
   const checkIfRefUserExists = async (user, ref) => {
     try {
+      alert("you are referred")
+
       const getUserResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
       ); // Adjust the API endpoint as per your backend
@@ -144,7 +146,6 @@ const MobileView = () => {
 
   const registerRefUser = async (user, ref) => {
     try {
-      alert("you are referred")
       const registerResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
         {
