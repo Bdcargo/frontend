@@ -120,7 +120,7 @@ const MobileView = () => {
         // User exists, proceed with fetching wallet balance
       } else {
         // User does not exist, register the user
-        registerRefUser(user, ref);
+      //  registerRefUser(user, ref);
       }
     } catch (error) {
       toast.error("Error checking user existence.");
@@ -160,39 +160,42 @@ const MobileView = () => {
     }
   };
 
-  const registerRefUser = async (user, ref) => {
-    try {
-      const registerResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: user?.username,
-            referredBy: ref, // Pass any other required data from the Telegram user
-          }),
-        }
-      );
+  // const registerRefUser = async (user, ref) => {
+  //   try {
+  //     const registerResponse = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           username: user?.username,
+  //           referredBy: ref, // Pass any other required data from the Telegram user
+  //         }),
+  //       }
+  //     );
 
-      const data = await registerResponse.json();
-      console.log("reg data", data);
-      if (registerResponse.ok) {
-        // After successful registration, fetch wallet balance
-        toast.success("User registered successfully!");
-        fetchWalletBalance(user);
-      } else {
-        toast.error(`Error registering user: ${data.message}`);
-        console.error("Error registering user:", data.message);
-      }
-    } catch (error) {
-      toast.error("Error during user registration.");
-      console.error("Error during user registration:", error);
-    }
-  };
+  //     const data = await registerResponse.json();
+  //     console.log("reg data", data);
+  //     if (registerResponse.ok) {
+  //       // After successful registration, fetch wallet balance
+  //       toast.success("User registered successfully!");
+  //       fetchWalletBalance(user);
+  //     } else {
+  //       toast.error(`Error registering user: ${data.message}`);
+  //       console.error("Error registering user:", data.message);
+  //     }
+  //   } catch (error) {
+  //     toast.error("Error during user registration.");
+  //     console.error("Error during user registration:", error);
+  //   }
+  // };
 
   // Fetch wallet balance function
+  
+  
+  
   const fetchWalletBalance = async (user) => {
     try {
       const response = await fetch(
