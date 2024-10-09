@@ -108,6 +108,7 @@ const MobileView = () => {
   const checkIfRefUserExists = async (user, ref) => {
     try {
       alert("you are referred")
+      console.log("mine", user)
 
       const getUserResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
