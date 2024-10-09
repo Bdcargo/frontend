@@ -26,11 +26,11 @@ const MobileView = () => {
   const search = useSearchParams();
 
 
-  useEffect(() => {
-    if (referralCode && user.username) {
-       checkIfRefUserExists(user, referralCode);
-    }
-  }, [referralCode, user]);
+  // useEffect(() => {
+  //   if (referralCode && user.username) {
+  //      checkIfRefUserExists(user, referralCode);
+  //   }
+  // }, [referralCode, user]);
 
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
