@@ -116,6 +116,7 @@ const MobileView = () => {
 
       if (getUserResponse.ok) {
         // User exists, proceed with fetching wallet balance
+        fetchWalletBalance(user)
       } else {
         // User does not exist, register the user
         registerRefUser(user, ref);
