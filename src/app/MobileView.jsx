@@ -332,16 +332,16 @@ const MobileView = () => {
       >
         {/* Header with Logo */}
         <div className="flex md:items-center flex-col w-full px-6">
-          <div className="mt-12 ">
-            <h1 className="text-xl font-extrabold">Texo Coin</h1>
+          <div className="mt-8 flex justify-center ">
+            <img src="/assets/coin.png" className="w-28 object-contain " alt="" />
           </div>
 
           {/* Wallet Balance */}
-          <div className="text-center flex flex-col items-start mt-8">
+          <div className="text-center flex flex-col items-start mt-4">
             <p className="text-sm font-medium">Wallet Balance</p>
             <h2 className="text-6xl font-bold my-2">{walletBalance}</h2>{" "}
             {/* Display dynamic wallet balance */}
-            <button className="px-4 bg-[#2583ff80] py-1 rounded-full text-sm font-light">
+            <button className="px-4 bg-[#ffe9252f] py-1 rounded-full text-sm font-light">
               {transactionStatus}
             </button>
           </div>
@@ -350,9 +350,9 @@ const MobileView = () => {
         {/* Cardano Coin Image */}
         <div className="mt-4">
           <img
-            src="/assets/cointeko.jpg"
+            src="/assets/coin.png"
             alt="Cardano Coin"
-            className="w-64 h-64 mix-blend-lighten"
+            className="w-full object-contain px-4 h-64"
           />
         </div>
 
