@@ -48,8 +48,7 @@ const MobileView = () => {
         if (window.Telegram?.WebApp) {
           const user = window.Telegram.WebApp.initDataUnsafe?.user;
           setTelegramUser(user);
-          const params = new URLSearchParams(window.location.search);
-          const startParam = params.get("start");
+          const startParam = window.Telegram.WebApp.initDataUnsafe.start_param
           if (startParam) {
             setReferralCode(startParam); // Set the referral code
             console.log("Referral Code:", startParam);
@@ -58,7 +57,7 @@ const MobileView = () => {
 
             if(startParam){
               checkIfRefUserExists(user, startParam
-                
+
               )
             }else{
               checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
