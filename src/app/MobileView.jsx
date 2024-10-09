@@ -393,7 +393,7 @@ const MobileView = () => {
             />
             <p className="text-sm font-light mt-1">Staking</p>
           </div>
-          {user?.referrals && user?.referralCode.length > 10 ? (
+          {user?.referrals && user?.referrals.length > 10 ? (
             <>
               <div             onClick={openWithdrawSheet}
  className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
