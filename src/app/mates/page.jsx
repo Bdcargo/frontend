@@ -66,12 +66,12 @@ const MatesPage = () => {
             {referrals &&  referrals.length > 0 ? (
               referrals.map((referral) => (
                 <div
-                  key={referral.id}
+                  key={referral._id}
                   className="flex flex-col items-center justify-center p-6 rounded-lg bg-[#ffffff20] backdrop-blur-lg shadow-lg text-white transition-transform transform hover:scale-105 hover:shadow-xl"
                 >
                  
                   <h2 className="text-xl font-semibold mb-1">
-                    {referral?.user?.username}
+                    {referral?.user}
                   </h2>
                   <p className={`w-full flex items-end justify-end text-md ${referral?.status === "inactive" ? "text-red-300 " : "text-white"}`}>{referral?.status}</p>                 
                 </div>
