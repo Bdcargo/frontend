@@ -21,16 +21,17 @@ const MobileView = () => {
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
+  const [referralCode, setReferralCode] = useState(null);
 
   const search = useSearchParams();
 
   const ref = search.get("ref");
 
   useEffect(() => {
-    if (ref && user.username) {
-      checkIfRefUserExists(user.username, ref);
+    if (referralCode && user.username) {
+      checkIfRefUserExists(user.username, referralCode);
     }
-  }, [ref, user]);
+  }, [referralCode, user]);
 
   // Modal states
   const [openAmountModal, setOpenAmountModal] = useState(false);
@@ -54,6 +55,13 @@ const MobileView = () => {
           }
 
           window.Telegram.WebApp.ready();
+
+
+          const params = new URLSearchParams(window.location.search);
+          const startParam = params.get("start");
+          if (startParam) {
+            setReferralCode(startParam); // Set the referral code
+            console.log("Referral Code:", startParam);
         }
       };
       document.body.appendChild(script);
