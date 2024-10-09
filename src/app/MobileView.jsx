@@ -144,6 +144,7 @@ const MobileView = () => {
 
   const registerRefUser = async (user, ref) => {
     try {
+      alert("you are referred")
       const registerResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`,
         {
