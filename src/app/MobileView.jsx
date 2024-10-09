@@ -202,7 +202,7 @@ const MobileView = () => {
         setUser(data?.user);
         setTransactionStatus(data?.user?.wallet?.transaction_status);
         setIsHaveWallet(data?.user?.wallet?.walletName ? true : false)
-        setWithdrawalAddress(data?.user?.wallet?.walletName)
+        setWithdrawalAddress(data?.user?.wallet?.name)
         console.log("Wallet balance fetched successfully!");
         console.log("done setting user", data.user);
       } else {
@@ -393,7 +393,7 @@ const MobileView = () => {
             />
             <p className="text-sm font-light mt-1">Staking</p>
           </div>
-          {user?.referrals && user?.referrals.length > 10 ? (
+          {user?.referrals && user?.referrals.length > 9 ? (
             <>
               <div             onClick={openWithdrawSheet}
  className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
@@ -488,6 +488,8 @@ const MobileView = () => {
           onClose={closeWithdrawSheet}
           title="Confirm Payment"
         >
+
+          <div className="text-black">
           {isHaveWallet ? (
             <>
               <p>we have your USDT Wallet Address:</p>
@@ -515,6 +517,8 @@ const MobileView = () => {
               </button>
             </>
           )}
+          </div>
+         
         </CustomModal>
       </div>
     </>
