@@ -28,7 +28,7 @@ const MobileView = () => {
 
   useEffect(() => {
     if (referralCode && user.username) {
-      // checkIfRefUserExists(user, referralCode);
+       checkIfRefUserExists(user, referralCode);
     }
   }, [referralCode, user]);
 
@@ -56,9 +56,9 @@ const MobileView = () => {
           if (user) {
 
             if(startParam){
-             // checkIfRefUserExists(user, startParam)
+              checkIfRefUserExists(user, startParam)
             }else{
-              checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+             // checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
 
             }
           }
@@ -103,28 +103,28 @@ const MobileView = () => {
     }
   };
 
-  // const checkIfRefUserExists = async (user, ref) => {
-  //   try {
-  //     alert("you are referred")
-  //     console.log("mine", user)
+  const checkIfRefUserExists = async (user, ref) => {
+    try {
+      alert("you are referred")
+      console.log("mine", user)
 
-  //     const getUserResponse = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
-  //     ); // Adjust the API endpoint as per your backend
-  //     const data = await getUserResponse.json();
-  //     console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
+      const getUserResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getUser/${user?.username}`
+      ); // Adjust the API endpoint as per your backend
+      const data = await getUserResponse.json();
+      console.log("user data", data, process.env.NEXT_PUBLIC_API_BASE_URL);
 
-  //     if (getUserResponse.ok) {
-  //       // User exists, proceed with fetching wallet balance
-  //     } else {
-  //       // User does not exist, register the user
-  //       registerRefUser(user, ref);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error checking user existence.");
-  //     console.error("Error checking user existence:", error);
-  //   }
-  // };
+      if (getUserResponse.ok) {
+        // User exists, proceed with fetching wallet balance
+      } else {
+        // User does not exist, register the user
+        registerRefUser(user, ref);
+      }
+    } catch (error) {
+      toast.error("Error checking user existence.");
+      console.error("Error checking user existence:", error);
+    }
+  };
 
   // Register the user if they don't exist
   const registerUser = async (user) => {
