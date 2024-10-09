@@ -56,9 +56,7 @@ const MobileView = () => {
           if (user) {
 
             if(startParam){
-              // checkIfRefUserExists(user, startParam
-
-              )
+             // checkIfRefUserExists(user, startParam)
             }else{
               checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
 
