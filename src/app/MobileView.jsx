@@ -81,7 +81,6 @@ const MobileView = () => {
 
      loadTelegramScript();
 
-    setLoading(false)
 
     // Optional: Cleanup function to remove the script if the component unmounts
     return () => {
@@ -112,6 +111,9 @@ const MobileView = () => {
       toast.error("Error checking user existence.");
       console.error("Error checking user existence:", error);
     }
+    setLoading(false)
+
+
   };
 
   const checkIfRefUserExists = async (user, ref) => {
@@ -135,6 +137,9 @@ const MobileView = () => {
       toast.error("Error checking user existence.");
       console.error("Error checking user existence:", error);
     }
+
+    setLoading(false)
+
   };
 
   // Register the user if they don't exist
