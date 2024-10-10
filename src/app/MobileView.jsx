@@ -23,6 +23,8 @@ const MobileView = () => {
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
   const [information, setInformation] = useState("");
+  const [loading, setLoading] = useState(true);
+  
 
   const router = useRouter();
 
@@ -46,11 +48,14 @@ const MobileView = () => {
 
   // Fetch user data and wallet balance
   useEffect(() => {
-    const loadTelegramScript = () => {
+
+    setLoading(true)
+
+    const loadTelegramScript = async () => {
       const script = document.createElement("script");
       script.src = "https://telegram.org/js/telegram-web-app.js";
       script.async = true; // Load the script asynchronously
-      script.onload = () => {
+      script.onload = async () => {
         // Initialize Telegram Web App after script is loaded
         if (window.Telegram?.WebApp) {
           const user = window.Telegram.WebApp.initDataUnsafe?.user;
@@ -62,9 +67,9 @@ const MobileView = () => {
           }
           if (user) {
             if (startParam) {
-              checkIfRefUserExists(user, startParam);
+              await checkIfRefUserExists(user, startParam);
             } else {
-              checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
+              await checkIfUserExists(user); // Check if the user exists before fetching the wallet balance
             }
           }
 
@@ -74,7 +79,9 @@ const MobileView = () => {
       document.body.appendChild(script);
     };
 
-    loadTelegramScript();
+     loadTelegramScript();
+
+    setLoading(false)
 
     // Optional: Cleanup function to remove the script if the component unmounts
     return () => {
@@ -330,216 +337,239 @@ const MobileView = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Header with Logo */}
-        <div className="flex md:items-center flex-col w-full px-6">
-          <div className="mt-8 flex justify-center ">
-            <img
-              src="/assets/coin.png"
-              className="w-28 object-contain "
-              alt=""
-            />
+
+        { loading ? (
+          <div className="flex items-center bg-cover justify-between h-screen">
+          Loading...
           </div>
+        ) : (
+          <>
 
-          {/* Wallet Balance */}
-          <div className="text-center flex flex-col items-start mt-4">
-            <p className="text-sm font-medium">Wallet Balance</p>
-            <h2 className="text-6xl font-bold my-2">{walletBalance}</h2>{" "}
-            {/* Display dynamic wallet balance */}
-            <button className="px-4 bg-[#ffe9252f] py-1 rounded-full text-sm font-light">
-              {transactionStatus}
-            </button>
-          </div>
-        </div>
 
-        {/* Cardano Coin Image */}
-        <div className="mt-4">
-          <img
-            src="/assets/coin.png"
-            alt="Cardano Coin"
-            className="w-full object-contain px-4 h-64"
-          />
-        </div>
 
-        {/* Bottom Navigation */}
-        <div
-          className="flex justify-center gap-2 mx-8 mb-8 w-fit px-6 bg-contain py-8 rounded-t-3xl"
-          style={{
-            backgroundImage: "url(/assets/bgd.png)",
-            backgroundPosition: "center",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <a href={`/mates/?userId=${user?._id}`}>
-            <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
-              <img
-                src="/assets/share.png"
-                alt="Mates"
-                className="w-6 h-6 object-contain"
-              />
-              <p className="text-sm font-light mt-1">Mates</p>
+<div className="flex flex-col  items-center bg-cover justify-between h-screen">
+
+{/* Header with Logo */}
+<div className="flex md:items-center flex-col w-full px-6">
+<div className="mt-8 flex justify-center ">
+<img
+  src="/assets/coin.png"
+  className="w-28 object-contain "
+  alt=""
+/>
+</div>
+
+{/* Wallet Balance */}
+<div className="text-center flex flex-col items-start mt-4">
+<p className="text-sm font-medium">Wallet Balance</p>
+<h2 className="text-6xl font-bold my-2">{walletBalance}</h2>{" "}
+{/* Display dynamic wallet balance */}
+<button className="px-4 bg-[#ffe9252f] py-1 rounded-full text-sm font-light">
+  {transactionStatus}
+</button>
+</div>
+</div>
+
+{/* Cardano Coin Image */}
+<div className="mt-4">
+<img
+src="/assets/coin.png"
+alt="Cardano Coin"
+className="w-full object-contain px-4 h-64"
+/>
+</div>
+
+{/* Bottom Navigation */}
+<div
+className="flex justify-center gap-2 mx-8 mb-8 w-fit px-6 bg-contain py-8 rounded-t-3xl"
+style={{
+backgroundImage: "url(/assets/bgd.png)",
+backgroundPosition: "center",
+backgroundSize: "contain",
+backgroundRepeat: "no-repeat",
+}}
+>
+<a href={`/mates/?userId=${user?._id}`}>
+<div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+  <img
+    src="/assets/share.png"
+    alt="Mates"
+    className="w-6 h-6 object-contain"
+  />
+  <p className="text-sm font-light mt-1">Mates</p>
+</div>
+</a>
+
+<a href={`/task/?username=${user?.username}`}>
+<div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+  <img
+    src="/assets/task.png"
+    alt="Task"
+    className="w-6 h-6 object-contain"
+  />
+  <p className="text-sm font-light mt-1">Task</p>
+</div>
+</a>
+
+<div
+onClick={openAmountSheet}
+className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
+>
+<img
+  src="/assets/money.png"
+  alt="Staking"
+  className="w-6 h-6 object-contain"
+/>
+<p className="text-sm font-light mt-1">Staking</p>
+</div>
+{user?.referrals && user?.referrals.length > 9 ? (
+<>
+  <div
+    onClick={openWithdrawSheet}
+    className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
+  >
+    <img
+      src="/assets/boost.png"
+      alt="Boost"
+      className="w-6 h-6 object-contain"
+    />
+    <p className="text-sm font-light mt-1">Withdraw</p>
+  </div>
+</>
+) : (
+<>
+  <div
+    onClick={openWithdrawSheet}
+    className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
+  >
+    <img
+      src="/assets/boost.png"
+      alt="Boost"
+      className="w-6 h-6 object-contain"
+    />
+    <p className="text-sm font-light mt-1">Withdraw</p>
+  </div>
+</>
+)}
+</div>
+
+{/* Amount Modal */}
+<CustomModal
+isOpen={openAmountModal}
+onClose={closeAmountSheet}
+title="Enter Amount"
+>
+<h3 className="text-xs flex items-center justify-center font-semibold text-red-300">
+You can stake a minimum of $10
+</h3>
+<input
+type="number"
+placeholder="Enter amount"
+className="w-full mt-4 p-3 text-2xl bg-gray-100 rounded-lg shadow-md text-black"
+value={amount}
+onChange={(e) => setAmount(e.target.value)} // Set the entered amount
+/>
+<div className="mt-6">
+<h3 className="text-xl font-semibold text-black">
+  Select Payment Option:
+</h3>
+<div className="flex justify-around mt-4">
+  <button
+    onClick={() => handlePaymentOptionClick("USDT")}
+    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+  >
+    USDT Wallet
+  </button>
+  <button
+    onClick={() => handlePaymentOptionClick("Crypto")}
+    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+  >
+    BEP20 Wallet
+  </button>
+</div>
+</div>
+</CustomModal>
+
+
+{/* Wallet Modal */}
+<CustomModal
+isOpen={openWalletModal}
+onClose={closeWalletSheet}
+title="Confirm Payment"
+>
+<p className="text-black  my-4 text-xs   "> {information}</p>
+<p className="text-black bg-orange-200 px-4 py-2 rounded-xl border border-slate-200 flex w-full my-4 text-xs   text-wrap whitespace-normal">
+{" "}
+{walletAddress}
+</p>
+<button
+onClick={handleCopy}
+className="px-3.5 py-1.5 bg-orange-800 text-white rounded-lg hover:bg-green-600"
+>
+Copy Address
+</button>
+<input
+type="text"
+placeholder="Transaction Hash"
+className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
+value={transactionHash}
+onChange={(e) => setTransactionHash(e.target.value)} // Set transaction hash
+/>
+<button
+onClick={handleTransactionConfirm}
+className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+>
+Confirm Transaction
+</button>
+</CustomModal>
+
+{/* Withdraw modal */}
+<CustomModal
+isOpen={openWithdrawModal}
+onClose={closeWithdrawSheet}
+title="Confirm Payment"
+>
+<div className="text-black">
+{isHaveWallet ? (
+  <>
+    <p>we have your USDT Wallet Address:</p>
+    <p className="px-4 py-2 bg-blue-100 rounded-xl border-slate-200 border">
+      {" "}
+      {withdrawalAddress}
+    </p>
+  </>
+) : (
+  <>
+    <p>Enter your USDT Wallet Address:</p>
+
+    <input
+      type="text"
+      placeholder="Wallet address"
+      className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
+      value={withdrawalAddress}
+      onChange={(e) => setWithdrawalAddress(e.target.value)} // Set transaction hash
+    />
+    <button
+      onClick={handleSetWallet}
+      className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+    >
+      Submit
+    </button>
+  </>
+)}
+</div>
+</CustomModal>
+
+
+</div>
+
+
+           </>
+        )
+
+        }
+
             </div>
-          </a>
-
-          <a href={`/task/?username=${user?.username}`}>
-            <div className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
-              <img
-                src="/assets/task.png"
-                alt="Task"
-                className="w-6 h-6 object-contain"
-              />
-              <p className="text-sm font-light mt-1">Task</p>
-            </div>
-          </a>
-
-          <div
-            onClick={openAmountSheet}
-            className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
-          >
-            <img
-              src="/assets/money.png"
-              alt="Staking"
-              className="w-6 h-6 object-contain"
-            />
-            <p className="text-sm font-light mt-1">Staking</p>
-          </div>
-          {user?.referrals && user?.referrals.length > 9 ? (
-            <>
-              <div
-                onClick={openWithdrawSheet}
-                className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
-              >
-                <img
-                  src="/assets/boost.png"
-                  alt="Boost"
-                  className="w-6 h-6 object-contain"
-                />
-                <p className="text-sm font-light mt-1">Withdraw</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div
-                onClick={openWithdrawSheet}
-                className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
-              >
-                <img
-                  src="/assets/boost.png"
-                  alt="Boost"
-                  className="w-6 h-6 object-contain"
-                />
-                <p className="text-sm font-light mt-1">Withdraw</p>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Amount Modal */}
-        <CustomModal
-          isOpen={openAmountModal}
-          onClose={closeAmountSheet}
-          title="Enter Amount"
-        >
-          <h3 className="text-xs flex items-center justify-center font-semibold text-red-300">
-            You can stake a minimum of $10
-          </h3>
-          <input
-            type="number"
-            placeholder="Enter amount"
-            className="w-full mt-4 p-3 text-2xl bg-gray-100 rounded-lg shadow-md text-black"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)} // Set the entered amount
-          />
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold text-black">
-              Select Payment Option:
-            </h3>
-            <div className="flex justify-around mt-4">
-              <button
-                onClick={() => handlePaymentOptionClick("USDT")}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                USDT Wallet
-              </button>
-              <button
-                onClick={() => handlePaymentOptionClick("Crypto")}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                BEP20 Wallet
-              </button>
-            </div>
-          </div>
-        </CustomModal>
-
-        {/* Wallet Modal */}
-        <CustomModal
-          isOpen={openWalletModal}
-          onClose={closeWalletSheet}
-          title="Confirm Payment"
-        >
-          <p className="text-black  my-4 text-xs   "> {information}</p>
-          <p className="text-black bg-orange-200 px-4 py-2 rounded-xl border border-slate-200 flex w-full my-4 text-xs   text-wrap whitespace-normal">
-            {" "}
-            {walletAddress}
-          </p>
-          <button
-            onClick={handleCopy}
-            className="px-3.5 py-1.5 bg-orange-800 text-white rounded-lg hover:bg-green-600"
-          >
-            Copy Address
-          </button>
-          <input
-            type="text"
-            placeholder="Transaction Hash"
-            className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
-            value={transactionHash}
-            onChange={(e) => setTransactionHash(e.target.value)} // Set transaction hash
-          />
-          <button
-            onClick={handleTransactionConfirm}
-            className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Confirm Transaction
-          </button>
-        </CustomModal>
-
-        {/* Withdraw modal */}
-        <CustomModal
-          isOpen={openWithdrawModal}
-          onClose={closeWithdrawSheet}
-          title="Confirm Payment"
-        >
-          <div className="text-black">
-            {isHaveWallet ? (
-              <>
-                <p>we have your USDT Wallet Address:</p>
-                <p className="px-4 py-2 bg-blue-100 rounded-xl border-slate-200 border">
-                  {" "}
-                  {withdrawalAddress}
-                </p>
-              </>
-            ) : (
-              <>
-                <p>Enter your USDT Wallet Address:</p>
-
-                <input
-                  type="text"
-                  placeholder="Wallet address"
-                  className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
-                  value={withdrawalAddress}
-                  onChange={(e) => setWithdrawalAddress(e.target.value)} // Set transaction hash
-                />
-                <button
-                  onClick={handleSetWallet}
-                  className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Submit
-                </button>
-              </>
-            )}
-          </div>
-        </CustomModal>
-      </div>
     </>
   );
 };
