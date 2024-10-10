@@ -22,12 +22,11 @@ const MobileView = () => {
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("inactive");
   const [walletAddress, setWalletAddress] = useState("0x1234567890abcdef");
+  const [information, setInformation] = useState("");
 
   const router = useRouter();
 
-
-  const [withdrawalAddress, setWithdrawalAddress] =
-    useState("");
+  const [withdrawalAddress, setWithdrawalAddress] = useState("");
   const [referralCode, setReferralCode] = useState(null);
 
   const search = useSearchParams();
@@ -206,8 +205,8 @@ const MobileView = () => {
         setWalletBalance(data?.user?.wallet?.balance); // Set the fetched balance
         setUser(data?.user);
         setTransactionStatus(data?.user?.wallet?.transaction_status);
-        setIsHaveWallet(data?.user?.wallet?.walletName ? true : false)
-        setWithdrawalAddress(data?.user?.wallet?.name)
+        setIsHaveWallet(data?.user?.wallet?.walletName ? true : false);
+        setWithdrawalAddress(data?.user?.wallet?.name);
         console.log("Wallet balance fetched successfully!");
         console.log("done setting user", data.user);
       } else {
@@ -233,9 +232,11 @@ const MobileView = () => {
   const handlePaymentOptionClick = (wallet) => {
     setSelectedWallet(wallet);
     if (wallet === "USDT") {
-      setWalletAddress("0x1234567890abcdef");
+      setWalletAddress("TFqWo7vqddgJN8or2qKULdnXbC472d9Cg1");
+      setInformation("This is a USDT TRC20 address");
     } else {
-      setWalletAddress("0x1234567890abcefg");
+      setInformation("This is a BEP20 address");
+      setWalletAddress("0xcE749E462a5e815Da1D0b80CE5E8d3c10f1D5Af5");
     }
     setOpenAmountModal(false);
     setOpenWalletModal(true);
@@ -274,7 +275,7 @@ const MobileView = () => {
         toast.success("Transaction successful!");
 
         closeWalletSheet(); // Close the modal after success
-        router.refresh()
+        router.refresh();
       } else {
         toast.error(`Transaction failed: ${data.message}`);
       }
@@ -290,8 +291,7 @@ const MobileView = () => {
     }
 
     try {
-      console.log("req wal", user?._id,
-        withdrawalAddress,)
+      console.log("req wal", user?._id, withdrawalAddress);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/setWalletName`,
         {
@@ -333,7 +333,11 @@ const MobileView = () => {
         {/* Header with Logo */}
         <div className="flex md:items-center flex-col w-full px-6">
           <div className="mt-8 flex justify-center ">
-            <img src="/assets/coin.png" className="w-28 object-contain " alt="" />
+            <img
+              src="/assets/coin.png"
+              className="w-28 object-contain "
+              alt=""
+            />
           </div>
 
           {/* Wallet Balance */}
@@ -401,8 +405,10 @@ const MobileView = () => {
           </div>
           {user?.referrals && user?.referrals.length > 9 ? (
             <>
-              <div             onClick={openWithdrawSheet}
- className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+              <div
+                onClick={openWithdrawSheet}
+                className="flex bg-[#00000033] hover:bg-[#4eb8ff33] cursor-pointer p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
+              >
                 <img
                   src="/assets/boost.png"
                   alt="Boost"
@@ -413,8 +419,10 @@ const MobileView = () => {
             </>
           ) : (
             <>
-              <div            onClick={openWithdrawSheet}
- className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center">
+              <div
+                onClick={openWithdrawSheet}
+                className="flex opacity-50 bg-[#00000033] p-1 px-3 m-1 rounded-lg w-fit flex-col items-center"
+              >
                 <img
                   src="/assets/boost.png"
                   alt="Boost"
@@ -432,6 +440,9 @@ const MobileView = () => {
           onClose={closeAmountSheet}
           title="Enter Amount"
         >
+          <h3 className="text-xs flex items-center justify-center font-semibold text-red-300">
+            You can stake a minimum of $10
+          </h3>
           <input
             type="number"
             placeholder="Enter amount"
@@ -454,7 +465,7 @@ const MobileView = () => {
                 onClick={() => handlePaymentOptionClick("Crypto")}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                Crypto Wallet
+                BEP20 Wallet
               </button>
             </div>
           </div>
@@ -466,10 +477,14 @@ const MobileView = () => {
           onClose={closeWalletSheet}
           title="Confirm Payment"
         >
-          <p>Wallet Address: {walletAddress}</p>
+          <p className="text-black  my-4 text-xs   "> {information}</p>
+          <p className="text-black bg-orange-200 px-4 py-2 rounded-xl border border-slate-200 flex w-full my-4 text-xs   text-wrap whitespace-normal">
+            {" "}
+            {walletAddress}
+          </p>
           <button
             onClick={handleCopy}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            className="px-3.5 py-1.5 bg-orange-800 text-white rounded-lg hover:bg-green-600"
           >
             Copy Address
           </button>
@@ -494,37 +509,35 @@ const MobileView = () => {
           onClose={closeWithdrawSheet}
           title="Confirm Payment"
         >
-
           <div className="text-black">
-          {isHaveWallet ? (
-            <>
-              <p>we have your USDT Wallet Address:</p>
-              <p className="px-4 py-2 bg-blue-100 rounded-xl border-slate-200 border">
-                {" "}
-                {withdrawalAddress}
-              </p>
-            </>
-          ) : (
-            <>
-              <p>Enter your USDT Wallet Address:</p>
+            {isHaveWallet ? (
+              <>
+                <p>we have your USDT Wallet Address:</p>
+                <p className="px-4 py-2 bg-blue-100 rounded-xl border-slate-200 border">
+                  {" "}
+                  {withdrawalAddress}
+                </p>
+              </>
+            ) : (
+              <>
+                <p>Enter your USDT Wallet Address:</p>
 
-              <input
-                type="text"
-                placeholder="Wallet address"
-                className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
-                value={withdrawalAddress}
-                onChange={(e) => setWithdrawalAddress(e.target.value)} // Set transaction hash
-              />
-              <button
-                onClick={handleSetWallet}
-                className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Submit
-              </button>
-            </>
-          )}
+                <input
+                  type="text"
+                  placeholder="Wallet address"
+                  className="w-full mt-4 p-3 text-lg bg-gray-100 rounded-lg shadow-md text-black"
+                  value={withdrawalAddress}
+                  onChange={(e) => setWithdrawalAddress(e.target.value)} // Set transaction hash
+                />
+                <button
+                  onClick={handleSetWallet}
+                  className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Submit
+                </button>
+              </>
+            )}
           </div>
-         
         </CustomModal>
       </div>
     </>
