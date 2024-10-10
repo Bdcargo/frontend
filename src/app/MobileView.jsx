@@ -347,7 +347,7 @@ const MobileView = () => {
 
 
 
-<div className="flex flex-col w-screen items-center bg-cover justify-between">
+<div className="flex flex-col w-screen h-screen items-center bg-cover justify-between">
 
 {/* Header with Logo */}
 <div className="flex md:items-center flex-col w-full px-6">
