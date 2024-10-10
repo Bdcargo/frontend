@@ -329,7 +329,7 @@ const MobileView = () => {
   return (
     <>
       <div
-        className="flex flex-col items-center bg-cover justify-between h-screen bg-blue-800 text-white"
+        className="flex flex-col items-center bg-cover justify-between h-screen bg-orange-800 text-white"
         style={{
           backgroundImage: "url(/assets/bg.png)",
           backgroundPosition: "center",
@@ -347,7 +347,7 @@ const MobileView = () => {
 
 
 
-<div className="flex flex-col  items-center bg-cover justify-between h-screen">
+<div className="flex flex-col w-screen items-center bg-cover justify-between">
 
 {/* Header with Logo */}
 <div className="flex md:items-center flex-col w-full px-6">
